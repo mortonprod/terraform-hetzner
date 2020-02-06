@@ -18,5 +18,5 @@ variable "ssh_key_name" {
 }
 
 variable "root_domain" {
-  default = "alexander.co.uk"
+  default = "alexandermorton.co.uk"
 }
