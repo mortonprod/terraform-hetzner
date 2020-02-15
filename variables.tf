@@ -20,3 +20,7 @@ variable "ssh_key_name" {
 variable "root_domain" {
   default = "alexandermorton.co.uk"
 }
+
+variable "hetzner_region" {
+  default = "eu-central"
+}
