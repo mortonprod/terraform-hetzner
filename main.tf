@@ -11,6 +11,10 @@ resource "hcloud_network" "network" {
   ip_range = "10.0.0.0/16"
 }
 
+resource "hcloud_floating_ip" "floating_ip" {
+  type = "ipv4"
+}
+
 resource "hcloud_network_subnet" "network_subnet" {
   network_id = "${hcloud_network.network.id}"
   type = "server"
@@ -24,6 +28,11 @@ resource "hcloud_ssh_key" "ssh_key" {
 }
 
 data "template_file" "file_worker" {
+    vars = {
+      FLOATING_IP = "${hcloud_floating_ip.floating_ip.ip_address}"
+      API_TOKEN   = "${var.api_token}"
+      NETWORK_TOKEN   = "${hcloud_network.network.id}"
+    }
     template = "${file("${path.module}/user-data/worker.tpl")}"
 }
 
@@ -40,6 +49,7 @@ resource "hcloud_server" "server_master" {
 }
 
 resource "hcloud_server" "server_worker" {
+  count = "${var.num_workers}"
   name = "${var.name}-worker"
   image = "${var.image}"
   server_type = "${var.type}"

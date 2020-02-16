@@ -6,7 +6,7 @@ variable "aws_region" {
 }
 
 variable "type" {
-  default = "cx21"
+  default = "cx11"
 }
 
 variable "image" {
@@ -23,4 +23,8 @@ variable "root_domain" {
 
 variable "hetzner_region" {
   default = "eu-central"
+}
+
+variable "num_workers" {
+  default = 1
 }
