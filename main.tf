@@ -37,6 +37,9 @@ data "template_file" "file_worker" {
 }
 
 data "template_file" "file_master" {
+    vars = {
+      FLOATING_IP = "${hcloud_floating_ip.floating_ip.ip_address}"
+    }
     template = "${file("${path.module}/user-data/master.tpl")}"
 }
 
@@ -66,5 +69,5 @@ resource "aws_route53_record" "example" {
   type    = "A"
   ttl = 30
   zone_id = "${data.aws_route53_zone.route53_zone.id}"
-  records = ["${hcloud_server.server.ipv4_address}"]
+  records = ["${hcloud_server.server_master.ipv4_address}"]
 }

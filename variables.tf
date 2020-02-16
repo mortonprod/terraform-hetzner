@@ -1,5 +1,5 @@
 variable "name" {
-  default = "rancher"
+  default = "kubernetes"
 }
 variable "aws_region" {
   default = "eu-west-2"
@@ -27,4 +27,7 @@ variable "hetzner_region" {
 
 variable "num_workers" {
   default = 1
+}
+
+variable "api_token" {
 }

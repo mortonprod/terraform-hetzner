@@ -2,7 +2,7 @@
 
 # Setup
 
-* Need to set hetzner api token before you set this up.
+* Need to set hetzner api token before you set this up. Easiest to source these into env
 * Also Need to setup aws creds linking to the correct account with the right hosted zone
 
 
@@ -24,6 +24,10 @@ Once this is completed you will have access to kubectl config which you can use 
 
 Run
 
+* Need to source the env like before
+* Need to pass hetzner as a command like so: terraform init -var 'api_token=$HCLOUD_TOKEN'
+* terraform plan -var 'api_token=$HCLOUD_TOKEN'
+* terraform apply -var 'api_token=$HCLOUD_TOKEN'
 * scp root@<master_ip>:/etc/kubernetes/admin.conf ${HOME}/.kube/config
 
 
