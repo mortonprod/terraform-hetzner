@@ -25,11 +25,19 @@ Once this is completed you will have access to kubectl config which you can use 
 Run
 
 * Need to source the env like before
-* Need to pass hetzner as a command like so: terraform init -var 'api_token=$HCLOUD_TOKEN'
-* terraform plan -var 'api_token=$HCLOUD_TOKEN'
-* terraform apply -var 'api_token=$HCLOUD_TOKEN'
-* scp root@<master_ip>:/etc/kubernetes/admin.conf ${HOME}/.kube/config
+* Need to pass hetzner as a command like so: terraform init -var "api_token=$HCLOUD_TOKEN"
+* terraform plan -var "api_token=$HCLOUD_TOKEN"
+* terraform apply -var "api_token=$HCLOUD_TOKEN"
+* scp -i ~/.ssh/hetzner root@<master_ip>:/etc/kubernetes/admin.conf ${HOME}/.kube/config
+  * To connect to cluster from local machine
+  * Make sure you don't have other cluster information there.
 
+
+# Testing getToken
+
+```
+echo  "{\"master_ip\": \"95.131.162.104\" }" | ./getToken.sh 
+```
 
 # References
 
