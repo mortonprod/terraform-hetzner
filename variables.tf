@@ -1,16 +1,16 @@
 variable "name" {
-  default = "kubernetes"
+  default = "services"
 }
 variable "aws_region" {
   default = "eu-west-2"
 }
 
 variable "type_master" {
-  default = "cx11"
+  default = "cx21"
 }
 
 variable "type_worker" {
-  default = "cx11"
+  default = "cx21"
 }
 
 variable "pod_cidr" {

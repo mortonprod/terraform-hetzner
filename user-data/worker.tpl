@@ -1,7 +1,7 @@
 #cloud-config
 package_upgrade: true
 write_files:
-  - path:  /etc/network/interfaces.d/60-floating-ip.cfg
+  - path: /etc/network/interfaces.d/60-floating-ip.cfg
     content: |
       auto eth0:1
       iface eth0:1 inet static
@@ -27,7 +27,8 @@ write_files:
       net.ipv6.conf.default.forwarding = 1
 
 packages:
-
+package_update: true
+package_upgrade: true
 runcmd:
     - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
     - curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
@@ -39,4 +40,8 @@ runcmd:
     - sysctl -p
     - apt-get install -y docker-ce kubeadm kubectl kubelet
     - eval ${JOIN_COMMAND}
+    - ufw allow ssh
+    - ufw allow proto tcp from 10.0.0.0/16 to any port 10250
+    # - ufw allow proto tcp from 10.0.0.0/16 to any port 30000:32767
+    - ufw enable
     - reboot

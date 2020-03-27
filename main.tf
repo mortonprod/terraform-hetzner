@@ -79,20 +79,26 @@ resource "hcloud_server" "server_worker_0" {
   user_data = "${data.template_file.file_worker.rendered}"
 }
 
+resource "hcloud_floating_ip_assignment" "floating_ip_assignment" {
+  floating_ip_id = "${hcloud_floating_ip.floating_ip.id}"
+  server_id = "${hcloud_server.server_worker_0.id}"
+}
+
+
 resource "hcloud_server_network" "server_network_worker_0" {
   server_id = "${hcloud_server.server_worker_0.id}"
   network_id = "${hcloud_network.network.id}"
   ip = "10.0.0.11"
 }
 
-data "aws_route53_zone" "route53_zone" {
-  name = "${var.root_domain}"
-}
+# data "aws_route53_zone" "route53_zone" {
+#   name = "${var.root_domain}"
+# }
 
-resource "aws_route53_record" "example" {
-  name    = "${var.name}"
-  type    = "A"
-  ttl = 30
-  zone_id = "${data.aws_route53_zone.route53_zone.id}"
-  records = ["${hcloud_server.server_master.ipv4_address}"]
-}
+# resource "aws_route53_record" "example" {
+#   name    = "${var.name}"
+#   type    = "A"
+#   ttl = 30
+#   zone_id = "${data.aws_route53_zone.route53_zone.id}"
+#   records = ["${hcloud_floating_ip.floating_ip.ip_address}"]
+# }

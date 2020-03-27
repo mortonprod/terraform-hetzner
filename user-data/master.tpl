@@ -5,6 +5,20 @@ write_files:
     content: |
       [Service]
       Environment="KUBELET_EXTRA_ARGS=--cloud-provider=external"
+  - path: /root/metallb.yml
+    content: |
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        namespace: metallb
+        name: metallb-config
+      data:
+        config: |
+          address-pools:
+          - name: default
+            protocol: layer2
+            addresses:
+            - ${FLOATING_IP}/32
   - path: /etc/systemd/system/docker.service.d/00-cgroup-systemd.conf
     content: |
       [Service]
@@ -39,8 +53,10 @@ write_files:
         token: "${API_TOKEN}"
 
 
-packages:
 
+packages:
+package_update: true
+package_upgrade: true
 runcmd:
     - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
     - curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
@@ -51,7 +67,7 @@ runcmd:
     - sysctl -p
     - apt-get install -y docker-ce kubeadm kubectl kubelet
     - kubeadm config images pull
-    - kubeadm init --pod-network-cidr=${POD_CIDR} --kubernetes-version=v1.17.0 --ignore-preflight-errors=NumCPU --apiserver-cert-extra-sans=10.0.0.10
+    - kubeadm init --pod-network-cidr=${POD_CIDR} --kubernetes-version=v1.18.0 --ignore-preflight-errors=NumCPU --apiserver-cert-extra-sans=10.0.0.10
     - mkdir -p /root/.kube
     - cp /etc/kubernetes/admin.conf /root/.kube/config
     - chown $(id -u):$(id -g) /root/.kube/config
@@ -65,5 +81,15 @@ runcmd:
     - kubectl apply -f https://raw.githubusercontent.com/kubernetes/csi-api/release-1.14/pkg/crd/manifests/csidriver.yaml
     - kubectl apply -f https://raw.githubusercontent.com/kubernetes/csi-api/release-1.14/pkg/crd/manifests/csinodeinfo.yaml
     - kubectl apply -f https://raw.githubusercontent.com/hetznercloud/csi-driver/master/deploy/kubernetes/hcloud-csi.yml
-    # - kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.3/manifests/metallb.yaml
+    - kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.9.3/manifests/namespace.yaml
+    - kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.9.3/manifests/metallb.yaml
+    - kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
+    - kubectl apply -f /root/metallb.yml
+    - ufw allow ssh
+    - ufw allow proto tcp from 0.0.0.0/0 to any port 6443
+    - ufw allow proto tcp from 10.0.0.0/16 to any port 2379:2380
+    - ufw allow proto tcp from 10.0.0.0/16 to any port 10250
+    - ufw allow proto tcp from 10.0.0.0/16 to any port 10251
+    - ufw allow proto tcp from 10.0.0.0/16 to any port 10252
+    - ufw enable
     - reboot
